@@ -20,56 +20,149 @@ st.set_page_config(
 )
 
 # -----------------------
-# CUSTOM CSS
+# PROFESSIONAL CUSTOM CSS
 # -----------------------
 st.markdown("""
     <style>
+    /* Main Header - Professional Sustainability Design */
     .main-header {
-        background: linear-gradient(135deg, #1B5E20 0%, #2E7D32 100%);
-        padding: 25px;
-        border-radius: 15px;
-        margin-bottom: 25px;
+        background: linear-gradient(135deg, #0D47A1 0%, #1B5E20 100%);
+        padding: 35px 25px;
+        border-radius: 20px;
+        margin-bottom: 30px;
         text-align: center;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        position: relative;
+        overflow: hidden;
+    }
+    .main-header::before {
+        content: "🌿";
+        position: absolute;
+        font-size: 120px;
+        opacity: 0.1;
+        bottom: -20px;
+        right: -20px;
+        transform: rotate(-15deg);
+    }
+    .main-header::after {
+        content: "🌍";
+        position: absolute;
+        font-size: 100px;
+        opacity: 0.1;
+        top: -30px;
+        left: -20px;
+        transform: rotate(15deg);
     }
     .main-header h1 {
         color: white;
         margin: 0;
-        font-size: 32px;
+        font-size: 36px;
+        font-weight: 700;
+        letter-spacing: -0.5px;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
     }
     .main-header p {
         color: #E8F5E9;
-        margin: 10px 0 0 0;
+        margin: 15px 0 0 0;
+        font-size: 16px;
+        opacity: 0.95;
     }
+    .main-header .team-line {
+        margin-top: 20px;
+        padding-top: 15px;
+        border-top: 1px solid rgba(255,255,255,0.2);
+    }
+    
+    /* Topic Cards - Professional Design */
     .topic-card {
-        background: white;
+        background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
         padding: 20px;
-        border-radius: 12px;
-        margin-bottom: 15px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        border-left: 5px solid;
+        border-radius: 16px;
+        margin-bottom: 16px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        border-left: 6px solid;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .topic-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.12);
     }
     .topic-number {
-        font-size: 24px;
-        font-weight: bold;
-        color: #2E7D32;
+        font-size: 28px;
+        font-weight: 800;
+        display: inline-block;
+        width: 50px;
+        height: 50px;
+        line-height: 50px;
+        text-align: center;
+        border-radius: 12px;
+        margin-right: 15px;
     }
     .kpi-highlight {
-        background: #E8F5E9;
-        padding: 8px;
-        border-radius: 8px;
-        font-family: monospace;
+        background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
+        padding: 10px 15px;
+        border-radius: 12px;
+        font-family: 'Courier New', monospace;
+        font-size: 14px;
+        margin: 10px 0;
     }
     .risk-high {
         color: #D32F2F;
         font-weight: bold;
+        background: #FFEBEE;
+        padding: 3px 8px;
+        border-radius: 20px;
+        display: inline-block;
     }
     .risk-medium {
         color: #F57C00;
         font-weight: bold;
+        background: #FFF3E0;
+        padding: 3px 8px;
+        border-radius: 20px;
+        display: inline-block;
     }
     .risk-low {
         color: #388E3C;
         font-weight: bold;
+        background: #E8F5E9;
+        padding: 3px 8px;
+        border-radius: 20px;
+        display: inline-block;
+    }
+    
+    /* Stat Cards */
+    .stat-card {
+        background: linear-gradient(135deg, #1B5E20 0%, #2E7D32 100%);
+        padding: 20px;
+        border-radius: 16px;
+        text-align: center;
+        color: white;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .stat-card h3 {
+        font-size: 32px;
+        margin: 0;
+        font-weight: 700;
+    }
+    .stat-card p {
+        margin: 8px 0 0 0;
+        opacity: 0.9;
+        font-size: 14px;
+    }
+    
+    /* Sidebar styling */
+    .css-1d391kg, .css-12oz5g7 {
+        background: linear-gradient(180deg, #0A2E0F 0%, #1B5E20 100%);
+    }
+    
+    /* Metric cards */
+    .metric-card {
+        background: white;
+        padding: 15px;
+        border-radius: 12px;
+        text-align: center;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     }
     </style>
 """, unsafe_allow_html=True)
@@ -89,8 +182,12 @@ if "comparison_mode" not in st.session_state:
 if not st.session_state.logged_in:
     st.markdown("""
         <div class='main-header'>
-            <h1>🌱 Sustainability Report Analysis with AI Agent</h1>
-            <p>GRI Standards | ESG Integration | AI-Powered Insights</p>
+            <h1>🌱 Sustainability Report Analysis</h1>
+            <p>with AI Agent | GRI Standards | ESG Integration</p>
+            <div class='team-line'>
+                <p style='font-weight: bold;'>Team Leader: Ismail Kamal | Under Supervision: Dr. Mohamed Tash</p>
+                <p style='font-size: 12px; opacity: 0.8;'>QHSE Master at Alexandria University</p>
+            </div>
         </div>
     """, unsafe_allow_html=True)
     
@@ -118,45 +215,39 @@ if not st.session_state.logged_in:
             ### 👥 Project Team
             <table style="width: 100%; border-collapse: collapse;">
                 <tr style="background-color: #E8F5E9;">
-                    <th style="padding: 8px; text-align: left; font-size: 14px;">Role</th>
-                    <th style="padding: 8px; text-align: left; font-size: 14px;">Name</th>
+                    <th style="padding: 8px; text-align: left;">Role</th>
+                    <th style="padding: 8px; text-align: left;">Name</th>
                 </tr>
-                <tr><td style="padding: 8px; font-size: 14px;"><b>Team Leader</b></td>
-                    <td style="padding: 8px; color: #00008B; font-weight: bold; font-size: 14px;">Ismail Kamal</td>
-                </tr>
-                <tr><td style="padding: 8px; font-size: 14px;">Team Member</td>
-                    <td style="padding: 8px; color: #00008B; font-size: 14px;">Adel ElSayed</td>
-                </tr>
-                <tr><td style="padding: 8px; font-size: 14px;">Team Member</td>
-                    <td style="padding: 8px; color: #00008B; font-size: 14px;">Mohamed Gaber</td>
-                </tr>
-                <tr><td style="padding: 8px; font-size: 14px;">Team Member</td>
-                    <td style="padding: 8px; color: #00008B; font-size: 14px;">Ahmed Omar</td>
-                </tr>
-                <tr><td style="padding: 8px; font-size: 14px;">Team Member</td>
-                    <td style="padding: 8px; color: #00008B; font-size: 14px;">Sherouk Ashraf</td>
-                </tr>
-                <tr><td style="padding: 8px; font-size: 14px;">Team Member</td>
-                    <td style="padding: 8px; color: #00008B; font-size: 14px;">Mohamed ElHammadi</td>
-                </tr>
-                <tr><td style="padding: 8px; font-size: 14px;">Team Member</td>
-                    <td style="padding: 8px; color: #00008B; font-size: 14px;">Farouk Sameh</td>
-                </tr>
+                <tr><td style="padding: 8px;"><b>Team Leader</b></td>
+                    <td style="padding: 8px; color: #00008B; font-weight: bold;">Ismail Kamal</td></tr>
+                <tr><td style="padding: 8px;">Team Member</td>
+                    <td style="padding: 8px; color: #00008B;">Adel ElSayed</td></tr>
+                <tr><td style="padding: 8px;">Team Member</td>
+                    <td style="padding: 8px; color: #00008B;">Mohamed Gaber</td></tr>
+                <tr><td style="padding: 8px;">Team Member</td>
+                    <td style="padding: 8px; color: #00008B;">Ahmed Omar</td></tr>
+                <tr><td style="padding: 8px;">Team Member</td>
+                    <td style="padding: 8px; color: #00008B;">Sherouk Ashraf</td></tr>
+                <tr><td style="padding: 8px;">Team Member</td>
+                    <td style="padding: 8px; color: #00008B;">Mohamed ElHammadi</td></tr>
+                <tr><td style="padding: 8px;">Team Member</td>
+                    <td style="padding: 8px; color: #00008B;">Farouk Sameh</td></tr>
             </table>
         """, unsafe_allow_html=True)
     
     with col2:
         st.markdown("""
-            <div style='background: linear-gradient(135deg, #FFEBEE 0%, #FFCDD2 100%); 
-                        padding: 25px; border-radius: 15px; text-align: center; 
-                        border: 3px solid #FF0000; box-shadow: 0 4px 15px rgba(255,0,0,0.2);'>
-                <h3 style='color: #2E7D32; margin: 0;'>🎓 Under Supervision of</h3>
-                <h1 style='color: #FF0000; font-weight: bold; font-size: 34px; margin: 10px 0; 
-                           text-shadow: 2px 2px 4px rgba(0,0,0,0.1);'>
+            <div style='background: linear-gradient(135deg, #0D47A1 0%, #1B5E20 100%); 
+                        padding: 30px; border-radius: 20px; text-align: center; 
+                        box-shadow: 0 10px 30px rgba(0,0,0,0.2);'>
+                <h3 style='color: #FFD54F; margin: 0;'>🎓 Under Supervision of</h3>
+                <h1 style='color: #FF0000; font-weight: bold; font-size: 32px; margin: 15px 0; 
+                           text-shadow: 2px 2px 4px rgba(0,0,0,0.2);'>
                     Dr. Mohamed Tash
                 </h1>
-                <p style='font-size: 16px; color: #333; font-weight: bold;'>Professor of Sustainability & ESG</p>
-                <p style='font-size: 14px; color: #666;'>PhD in Environmental Engineering | GRI Certified</p>
+                <p style='font-size: 18px; color: white; font-weight: bold;'>QHSE Master at Alexandria University</p>
+                <p style='font-size: 14px; color: #E8F5E9;'>Professor of Sustainability & ESG</p>
+                <p style='font-size: 12px; color: #FFD54F; margin-top: 15px;'>⭐ Lead Supervisor | ESG Expert ⭐</p>
             </div>
         """, unsafe_allow_html=True)
     
@@ -165,25 +256,33 @@ if not st.session_state.logged_in:
     st.stop()
 
 # -----------------------
-# MAIN APP HEADER
+# MAIN APP HEADER - PROFESSIONAL DESIGN
 # -----------------------
 st.markdown("""
     <div class='main-header'>
-        <h1>🌱 Sustainability Report Analysis with AI Agent</h1>
-        <p style='color: #E8F5E9; text-align: center; margin: 10px 0 0 0;'>
-            <span style='color: #00008B; font-weight: bold; font-size: 14px;'>Team Leader: Ismail Kamal</span> | 
-            <span style='color: #00008B; font-size: 14px;'>Adel ElSayed, Mohamed Gaber, Ahmed Omar, Sherouk Ashraf, Mohamed ElHammadi, Farouk Sameh</span> | 
-            <span style='color: #FF0000; font-weight: bold;'>Under Supervision: Dr. Mohamed Tash</span>
-        </p>
+        <h1>🌱 Sustainability Report Analysis</h1>
+        <p>with AI Agent | GRI Standards 2024 | ESG Framework</p>
+        <div class='team-line'>
+            <p style='font-weight: bold; color: white; font-size: 16px;'>
+                Team Leader: Ismail Kamal | Under Supervision: Dr. Mohamed Tash
+            </p>
+            <p style='font-size: 13px; color: #FFD54F; margin-top: 8px;'>
+                QHSE Master at Alexandria University
+            </p>
+        </div>
     </div>
 """, unsafe_allow_html=True)
 
 # -----------------------
-# SIDEBAR
+# SIDEBAR - PROFESSIONAL DESIGN
 # -----------------------
 with st.sidebar:
-    st.image("https://img.icons8.com/color/96/000000/sustainability.png", width=80)
-    st.markdown("## 🌿 Sustainability AI Agent")
+    st.markdown("""
+        <div style='text-align: center; padding: 10px;'>
+            <div style='font-size: 60px;'>🌿</div>
+            <h3 style='color: white; margin: 10px 0;'>Sustainability AI Agent</h3>
+        </div>
+    """, unsafe_allow_html=True)
     st.markdown("---")
     
     # Comparison Mode Toggle
@@ -206,21 +305,26 @@ with st.sidebar:
     st.markdown("---")
     st.markdown("### 👥 Team Members")
     st.markdown("""
-    <div style='color: #00008B; font-size: 14px;'>
-        <b style='color: #00008B;'>• Ismail Kamal</b> (Leader)<br>
-        <span style='color: #00008B;'>• Adel ElSayed</span><br>
-        <span style='color: #00008B;'>• Mohamed Gaber</span><br>
-        <span style='color: #00008B;'>• Ahmed Omar</span><br>
-        <span style='color: #00008B;'>• Sherouk Ashraf</span><br>
-        <span style='color: #00008B;'>• Mohamed ElHammadi</span><br>
-        <span style='color: #00008B;'>• Farouk Sameh</span>
+    <div style='color: #E8F5E9; font-size: 13px;'>
+        <b style='color: #FFD54F;'>• Ismail Kamal</b> (Leader)<br>
+        <span>• Adel ElSayed</span><br>
+        <span>• Mohamed Gaber</span><br>
+        <span>• Ahmed Omar</span><br>
+        <span>• Sherouk Ashraf</span><br>
+        <span>• Mohamed ElHammadi</span><br>
+        <span>• Farouk Sameh</span>
     </div>
     """, unsafe_allow_html=True)
     st.markdown("---")
     st.markdown("### 🎓 Supervisor")
-    st.markdown("<span style='color: #FF0000; font-weight: bold; font-size: 16px;'>Dr. Mohamed Tash</span>", unsafe_allow_html=True)
+    st.markdown("""
+    <div style='text-align: center;'>
+        <span style='color: #FF0000; font-weight: bold; font-size: 18px;'>Dr. Mohamed Tash</span><br>
+        <span style='color: #FFD54F; font-size: 12px;'>QHSE Master at Alexandria University</span>
+    </div>
+    """, unsafe_allow_html=True)
     st.markdown("---")
-    st.caption("Version 4.0 | Top 10 Sustainability Topics")
+    st.caption("Version 4.0 | Top 10 Topics | Professional Edition")
 
 # -----------------------
 # FUNCTIONS
@@ -246,7 +350,7 @@ def find_kpi(text, keyword):
     return "N/A"
 
 def extract_company_info(text):
-    """استخراج معلومات عامة عن الشركة"""
+    """Extract general company information"""
     activity_types = {
         "Petrochemical": ["petrochemical", "chemical", "polymer"],
         "Oil & Gas": ["oil", "gas", "petroleum", "refinery"],
@@ -261,14 +365,12 @@ def extract_company_info(text):
                 company_type = act_type
                 break
     
-    # Company size detection
     size = "Local"
     if "global" in text.lower() or "international" in text.lower():
         size = "Global"
     elif "regional" in text.lower():
         size = "Regional"
     
-    # Number of sites
     sites_match = re.search(r"(\d+)\s*(?:sites|facilities|locations|plants)", text, re.IGNORECASE)
     num_sites = sites_match.group(1) if sites_match else "N/A"
     
@@ -279,9 +381,8 @@ def extract_company_info(text):
     }
 
 def generate_top10_topics(text, company_info):
-    """توليد أهم 10 مواضيع للاستدامة"""
+    """Generate Top 10 Sustainability Topics"""
     
-    # Extract KPIs
     co2 = find_kpi(text, "co2")
     energy = find_kpi(text, "energy")
     water = find_kpi(text, "water")
@@ -306,7 +407,7 @@ def generate_top10_topics(text, company_info):
             "number": 2,
             "topic": "🌿 CO₂ / GHG Emissions",
             "kpi": f"{co2} metric tons CO₂e",
-            "risk": "Climate regulations, Carbon tax, Reputation damage" if co2 != "N/A" else "Data gap - unable to assess climate risk",
+            "risk": "Climate regulations, Carbon tax, Reputation damage",
             "impact": "Environmental / Regulatory",
             "color": "#2E7D32"
         },
@@ -322,7 +423,7 @@ def generate_top10_topics(text, company_info):
             "number": 4,
             "topic": "💧 Water Stewardship",
             "kpi": f"{water} m³",
-            "risk": "Water scarcity, Regulatory compliance, Community relations",
+            "risk": "Water scarcity, Regulatory compliance",
             "impact": "Environmental / Social",
             "color": "#1565C0"
         },
@@ -330,7 +431,7 @@ def generate_top10_topics(text, company_info):
             "number": 5,
             "topic": "🗑️ Waste Management",
             "kpi": f"{waste} tons generated",
-            "risk": "Landfill costs, Regulatory fines, Reputation",
+            "risk": "Landfill costs, Regulatory fines",
             "impact": "Environmental / Economic",
             "color": "#6A1B9A"
         },
@@ -338,7 +439,7 @@ def generate_top10_topics(text, company_info):
             "number": 6,
             "topic": "🛡️ Occupational Health & Safety",
             "kpi": f"LTIFR: {safety if safety != 'N/A' else 'N/A'}",
-            "risk": "Workplace accidents, Legal liability, Employee morale",
+            "risk": "Workplace accidents, Legal liability",
             "impact": "Social / Legal",
             "color": "#C62828"
         },
@@ -346,15 +447,15 @@ def generate_top10_topics(text, company_info):
             "number": 7,
             "topic": "👥 Workforce & Human Rights",
             "kpi": f"{employees} employees | Training: {training if training != 'N/A' else 'N/A'} hrs",
-            "risk": "Labor disputes, Skill shortage, Diversity compliance",
+            "risk": "Labor disputes, Skill shortage",
             "impact": "Social / Economic",
             "color": "#4527A0"
         },
         {
             "number": 8,
             "topic": "🏛️ Governance & Ethics",
-            "kpi": f"Board Independence: {board if board != 'N/A' else 'N/A'}% | Ethics: {ethics if ethics != 'N/A' else 'N/A'}%",
-            "risk": "Corruption, Non-compliance, Shareholder activism",
+            "kpi": f"Board Independence: {board if board != 'N/A' else 'N/A'}%",
+            "risk": "Corruption, Non-compliance",
             "impact": "Governance / Legal",
             "color": "#4A148C"
         },
@@ -362,7 +463,7 @@ def generate_top10_topics(text, company_info):
             "number": 9,
             "topic": "🎯 Renewable Energy & Net Zero",
             "kpi": f"Renewable share: {renewable if renewable != 'N/A' else 'N/A'}%",
-            "risk": "Transition risk, Stranded assets, Investor pressure",
+            "risk": "Transition risk, Investor pressure",
             "impact": "Environmental / Economic",
             "color": "#FF8F00"
         },
@@ -370,8 +471,8 @@ def generate_top10_topics(text, company_info):
             "number": 10,
             "topic": "⚠️ Risk & Compliance Summary",
             "kpi": "GRI Standards assessment",
-            "risk": "Regulatory non-compliance, Fines, Legal action",
-            "impact": "Legal / Financial / Reputational",
+            "risk": "Regulatory non-compliance",
+            "impact": "Legal / Financial",
             "color": "#D32F2F"
         }
     ]
@@ -379,7 +480,7 @@ def generate_top10_topics(text, company_info):
     return topics
 
 def display_top10_topics(topics):
-    """عرض أهم 10 مواضيع بشكل منظم"""
+    """Display Top 10 Topics in professional format"""
     
     st.markdown("## 🏆 Top 10 Sustainability Topics")
     st.markdown("---")
@@ -387,7 +488,6 @@ def display_top10_topics(topics):
     for topic in topics:
         color = topic["color"]
         
-        # Risk level styling
         risk_text = topic["risk"]
         if "high" in risk_text.lower() or "severe" in risk_text.lower():
             risk_style = "risk-high"
@@ -400,15 +500,15 @@ def display_top10_topics(topics):
             <div class='topic-card' style='border-left-color: {color};'>
                 <table style="width: 100%;">
                     <tr>
-                        <td style="width: 60px; vertical-align: top;">
-                            <span class='topic-number' style='color: {color};'>#{topic['number']}</span>
+                        <td style="width: 70px; vertical-align: top;">
+                            <div class='topic-number' style='background: {color}20; color: {color};'>#{topic['number']}</div>
                         </td>
                         <td style="vertical-align: top;">
                             <h3 style='color: {color}; margin: 0 0 10px 0;'>{topic['topic']}</h3>
-                            <div class='kpi-highlight' style='background: {color}20;'>
+                            <div class='kpi-highlight'>
                                 <b>📊 KPI:</b> {topic['kpi']}
                             </div>
-                            <div style='margin-top: 8px;'>
+                            <div style='margin-top: 12px;'>
                                 <b>⚠️ Risk:</b> <span class='{risk_style}'>{topic['risk']}</span>
                             </div>
                             <div style='margin-top: 8px;'>
@@ -421,51 +521,62 @@ def display_top10_topics(topics):
         """, unsafe_allow_html=True)
 
 def create_risk_matrix(topics):
-    """إنشاء مصفوفة المخاطر"""
-    risks = []
-    impacts = []
+    """Create risk matrix chart"""
+    risk_names = []
+    impact_scores = []
     
-    for topic in topics:
-        risks.append(topic['topic'].split()[1] if len(topic['topic'].split()) > 1 else topic['topic'])
+    for topic in topics[:8]:
+        name = topic['topic'].split()[1] if len(topic['topic'].split()) > 1 else topic['topic']
+        risk_names.append(name)
         if "Environmental" in topic['impact']:
-            impacts.append(3)
+            impact_scores.append(3)
         elif "Social" in topic['impact']:
-            impacts.append(2)
+            impact_scores.append(2)
+        elif "Legal" in topic['impact']:
+            impact_scores.append(3)
         else:
-            impacts.append(1)
+            impact_scores.append(1)
     
-    fig = go.Figure(data=[go.Bar(x=risks[:5], y=impacts[:5], marker_color=['#2E7D32', '#F57C00', '#1565C0', '#6A1B9A', '#C62828'])])
-    fig.update_layout(title="Top 5 Risks by Impact Level", xaxis_title="Risk Category", yaxis_title="Impact Score (1-3)", height=400)
+    colors_risk = ['#2E7D32', '#F57C00', '#1565C0', '#6A1B9A', '#C62828', '#4527A0', '#FF8F00', '#D32F2F']
+    
+    fig = go.Figure(data=[go.Bar(x=risk_names, y=impact_scores, 
+                                  marker_color=colors_risk[:len(risk_names)],
+                                  text=impact_scores, textposition='outside')])
+    fig.update_layout(title="Top Risks by Impact Level",
+                      xaxis_title="Risk Category",
+                      yaxis_title="Impact Score (1-3)",
+                      height=450,
+                      plot_bgcolor='rgba(0,0,0,0)',
+                      paper_bgcolor='rgba(0,0,0,0)')
+    fig.update_xaxes(tickangle=45)
     return fig
 
 def generate_pdf_report(topics, company_info):
-    """توليد تقرير PDF"""
+    """Generate professional PDF report"""
     filename = f"Sustainability_Top10_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
     doc = SimpleDocTemplate(filename, pagesize=letter)
     styles = getSampleStyleSheet()
     story = []
     
-    title_style = ParagraphStyle('CustomTitle', parent=styles['Heading1'], fontSize=24, 
+    title_style = ParagraphStyle('CustomTitle', parent=styles['Heading1'], fontSize=26, 
                                   textColor=colors.HexColor('#1B5E20'), spaceAfter=30, alignment=1)
     
-    # Cover
     story.append(Paragraph("🌱 TOP 10 SUSTAINABILITY TOPICS", title_style))
     story.append(Spacer(1, 12))
-    story.append(Paragraph("GRI Standards Compliant | ESG Analysis", styles['Heading2']))
+    story.append(Paragraph("GRI Standards Compliant | ESG Analysis | AI-Powered", styles['Heading2']))
     story.append(Spacer(1, 36))
-    story.append(Paragraph("<b>Prepared by:</b> Ismail Kamal & Team", styles['Normal']))
-    story.append(Paragraph("<b><font color='red'>Supervised by: Dr. Mohamed Tash</font></b>", styles['Normal']))
+    story.append(Paragraph("<b>Team Leader:</b> Ismail Kamal", styles['Normal']))
+    story.append(Paragraph("<b><font color='red'>Under Supervision: Dr. Mohamed Tash</font></b>", styles['Normal']))
+    story.append(Paragraph("<b>QHSE Master at Alexandria University</b>", styles['Normal']))
     story.append(Paragraph(f"<b>Date:</b> {datetime.now().strftime('%B %d, %Y')}", styles['Normal']))
     story.append(Spacer(1, 24))
     
-    # Company Info
     story.append(Paragraph("🏭 COMPANY INFORMATION", styles['Heading2']))
     story.append(Paragraph(f"Activity Type: {company_info['activity_type']}", styles['Normal']))
     story.append(Paragraph(f"Company Size: {company_info['size']}", styles['Normal']))
     story.append(Paragraph(f"Number of Sites: {company_info['num_sites']}", styles['Normal']))
     story.append(Spacer(1, 20))
     
-    # Top 10 Topics Table
     story.append(Paragraph("📊 TOP 10 SUSTAINABILITY TOPICS", styles['Heading2']))
     
     table_data = [['#', 'Topic', 'KPI', 'Risk', 'Impact']]
@@ -473,18 +584,19 @@ def generate_pdf_report(topics, company_info):
         table_data.append([
             str(topic['number']),
             topic['topic'],
-            topic['kpi'][:50] + "..." if len(topic['kpi']) > 50 else topic['kpi'],
-            topic['risk'][:50] + "..." if len(topic['risk']) > 50 else topic['risk'],
+            topic['kpi'][:45] + "..." if len(topic['kpi']) > 45 else topic['kpi'],
+            topic['risk'][:45] + "..." if len(topic['risk']) > 45 else topic['risk'],
             topic['impact']
         ])
     
-    table = Table(table_data, colWidths=[30, 100, 120, 120, 80])
+    table = Table(table_data, colWidths=[30, 100, 110, 120, 80])
     table.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#2E7D32')),
+        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#1B5E20')),
         ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
         ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
         ('GRID', (0, 0), (-1, -1), 1, colors.grey),
         ('FONTSIZE', (0, 0), (-1, -1), 8),
+        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
     ]))
     story.append(table)
     
@@ -506,15 +618,30 @@ if not st.session_state.comparison_mode:
             with st.spinner("🤖 Generating Top 10 Sustainability Topics..."):
                 topics = generate_top10_topics(text, company_info)
             
-            # Display Company Info
+            # Company Info Cards
             st.markdown("## 🏭 Company Overview")
             col1, col2, col3 = st.columns(3)
             with col1:
-                st.metric("Activity Type", company_info['activity_type'])
+                st.markdown(f"""
+                    <div class='stat-card'>
+                        <h3>{company_info['activity_type']}</h3>
+                        <p>Activity Type</p>
+                    </div>
+                """, unsafe_allow_html=True)
             with col2:
-                st.metric("Company Size", company_info['size'])
+                st.markdown(f"""
+                    <div class='stat-card'>
+                        <h3>{company_info['size']}</h3>
+                        <p>Company Size</p>
+                    </div>
+                """, unsafe_allow_html=True)
             with col3:
-                st.metric("Number of Sites", company_info['num_sites'])
+                st.markdown(f"""
+                    <div class='stat-card'>
+                        <h3>{company_info['num_sites']}</h3>
+                        <p>Number of Sites</p>
+                    </div>
+                """, unsafe_allow_html=True)
             
             st.markdown("---")
             
@@ -526,25 +653,44 @@ if not st.session_state.comparison_mode:
             st.markdown("## 📊 Risk Matrix")
             st.plotly_chart(create_risk_matrix(topics), use_container_width=True)
             
-            # Summary Stats
+            # Summary Statistics
             st.markdown("---")
             st.markdown("## 📈 Summary Statistics")
             
-            col1, col2, col3, col4 = st.columns(4)
-            
-            # Count risks by impact type
             env_risks = sum(1 for t in topics if "Environmental" in t['impact'])
             social_risks = sum(1 for t in topics if "Social" in t['impact'])
             econ_risks = sum(1 for t in topics if "Economic" in t['impact'])
+            legal_risks = sum(1 for t in topics if "Legal" in t['impact'])
             
+            col1, col2, col3, col4 = st.columns(4)
             with col1:
-                st.metric("🌿 Environmental Risks", env_risks)
+                st.markdown(f"""
+                    <div class='stat-card' style='background: linear-gradient(135deg, #2E7D32 0%, #1B5E20 100%);'>
+                        <h3>{env_risks}</h3>
+                        <p>🌿 Environmental Risks</p>
+                    </div>
+                """, unsafe_allow_html=True)
             with col2:
-                st.metric("👥 Social Risks", social_risks)
+                st.markdown(f"""
+                    <div class='stat-card' style='background: linear-gradient(135deg, #1565C0 0%, #0D47A1 100%);'>
+                        <h3>{social_risks}</h3>
+                        <p>👥 Social Risks</p>
+                    </div>
+                """, unsafe_allow_html=True)
             with col3:
-                st.metric("💰 Economic Risks", econ_risks)
+                st.markdown(f"""
+                    <div class='stat-card' style='background: linear-gradient(135deg, #F57C00 0%, #E65100 100%);'>
+                        <h3>{econ_risks}</h3>
+                        <p>💰 Economic Risks</p>
+                    </div>
+                """, unsafe_allow_html=True)
             with col4:
-                st.metric("📋 Total Topics", len(topics))
+                st.markdown(f"""
+                    <div class='stat-card' style='background: linear-gradient(135deg, #C62828 0%, #8B0000 100%);'>
+                        <h3>{legal_risks}</h3>
+                        <p>⚖️ Legal Risks</p>
+                    </div>
+                """, unsafe_allow_html=True)
             
             # PDF Download
             st.markdown("---")
@@ -574,7 +720,6 @@ else:
             with st.spinner(f"Analyzing Company {i+1}..."):
                 text = extract_text(company_file)
                 company_info = extract_company_info(text)
-                topics = generate_top10_topics(text, company_info)
                 
                 companies_data.append({
                     "Company": f"Company {i+1}",
@@ -599,14 +744,22 @@ else:
         st.success("✅ Comparison complete!")
 
 # -----------------------
-# FOOTER
+# PROFESSIONAL FOOTER
 # -----------------------
 st.markdown("---")
 st.markdown("""
-    <div style='text-align: center; color: gray;'>
-        <p>🌱 Sustainability Report Analysis with AI Agent | Top 10 Sustainability Topics | GRI Standards Compliant</p>
-        <p>Developed by <span style='color: #00008B; font-weight: bold;'>Ismail Kamal</span> & Team | 
-        <span style='color: #FF0000; font-weight: bold;'>Under Supervision of Dr. Mohamed Tash</span></p>
-        <p>Version 4.0 | Top 10 Topics | Risk Matrix | ESG Analytics</p>
+    <div style='text-align: center; padding: 20px; background: linear-gradient(135deg, #0A2E0F 0%, #1B5E20 100%); 
+                border-radius: 15px; margin-top: 20px;'>
+        <p style='color: white; margin: 0;'>
+            🌱 Sustainability Report Analysis with AI Agent | GRI Standards 2024 Compliant
+        </p>
+        <p style='color: #E8F5E9; font-size: 12px; margin: 10px 0 0 0;'>
+            Developed by <strong>Ismail Kamal</strong> & Team | 
+            <strong style='color: #FF0000;'>Under Supervision of Dr. Mohamed Tash</strong> | 
+            QHSE Master at Alexandria University
+        </p>
+        <p style='color: #FFD54F; font-size: 11px; margin: 8px 0 0 0;'>
+            Version 4.0 | Top 10 Topics | Risk Matrix | Professional Edition
+        </p>
     </div>
 """, unsafe_allow_html=True)
