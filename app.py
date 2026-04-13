@@ -53,21 +53,59 @@ if not st.session_state.logged_in:
     col1, col2 = st.columns(2)
     
     with col1:
+        # Team with new colors
         st.markdown("""
             ### 👥 Project Team
-            | Role | Name |
-            |------|------|
-            | **Team Leader** | Ismail Kamal |
-            | **Team Member** | Adel ElSayed |
-            | **Team Member** | Mohamed Gaber |
-            | **Team Member** | Ahmed Omar |
-            | **Team Member** | Sherouk Ashraf |
-            | **Team Member** | Mohamed ElHammadi |
-            | **Team Member** | Farouk Sameh |
-        """)
+            <style>
+                .team-leader {
+                    color: #0D47A1;
+                    font-weight: bold;
+                    font-size: 16px;
+                }
+                .team-member {
+                    color: #42A5F5;
+                    font-weight: normal;
+                    font-size: 14px;
+                }
+            </style>
+            <table style="width: 100%; border-collapse: collapse;">
+                <tr style="background-color: #E8F5E9;">
+                    <th style="padding: 8px; text-align: left;">Role</th>
+                    <th style="padding: 8px; text-align: left;">Name</th>
+                </tr>
+                <tr>
+                    <td style="padding: 8px;"><strong>Team Leader</strong></td>
+                    <td style="padding: 8px;"><span class="team-leader">Ismail Kamal</span></td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px;">Team Member</td>
+                    <td style="padding: 8px;"><span class="team-member">Adel ElSayed</span></td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px;">Team Member</td>
+                    <td style="padding: 8px;"><span class="team-member">Mohamed Gaber</span></td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px;">Team Member</td>
+                    <td style="padding: 8px;"><span class="team-member">Ahmed Omar</span></td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px;">Team Member</td>
+                    <td style="padding: 8px;"><span class="team-member">Sherouk Ashraf</span></td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px;">Team Member</td>
+                    <td style="padding: 8px;"><span class="team-member">Mohamed ElHammadi</span></td>
+                </tr>
+                <tr>
+                    <td style="padding: 8px;">Team Member</td>
+                    <td style="padding: 8px;"><span class="team-member">Farouk Sameh</span></td>
+                </tr>
+            </table>
+        """, unsafe_allow_html=True)
     
     with col2:
-        # DR. MOHAMED TASH - RED & BOLD (مطلوب)
+        # DR. MOHAMED TASH - RED & BOLD
         st.markdown("""
             <div style='background: linear-gradient(135deg, #FFEBEE 0%, #FFCDD2 100%); 
                         padding: 25px; border-radius: 15px; text-align: center; 
@@ -93,7 +131,11 @@ if not st.session_state.logged_in:
 st.markdown("""
     <div style='background: linear-gradient(135deg, #1B5E20 0%, #2E7D32 100%); padding: 20px; border-radius: 10px; margin-bottom: 20px;'>
         <h1 style='color: white; text-align: center; margin: 0;'>🌱 Sustainability Report Analysis with AI Agent</h1>
-        <p style='color: #E8F5E9; text-align: center; margin: 10px 0 0 0;'>Team Leader: Ismail Kamal | <span style='color: #FF0000; font-weight: bold;'>Under Supervision: Dr. Mohamed Tash</span></p>
+        <p style='color: #E8F5E9; text-align: center; margin: 10px 0 0 0;'>
+            <span style='color: #0D47A1; font-weight: bold;'>Team Leader: Ismail Kamal</span> | 
+            <span style='color: #42A5F5;'>Adel, Mohamed, Ahmed, Sherouk, ElHammadi, Farouk</span> | 
+            <span style='color: #FF0000; font-weight: bold;'>Supervisor: Dr. Mohamed Tash</span>
+        </p>
     </div>
 """, unsafe_allow_html=True)
 
@@ -101,16 +143,31 @@ with st.sidebar:
     st.image("https://img.icons8.com/color/96/000000/sustainability.png", width=80)
     st.markdown("## 🌿 Sustainability AI Agent")
     st.markdown("---")
+    
+    # Team Members with new colors in sidebar
     st.markdown("### 👥 Team Members")
     st.markdown("""
-    - **Ismail Kamal** (Leader)
-    - Adel ElSayed
-    - Mohamed Gaber
-    - Ahmed Omar
-    - Sherouk Ashraf
-    - Mohamed ElHammadi
-    - Farouk Sameh
-    """)
+    <style>
+        .sidebar-leader {
+            color: #0D47A1;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        .sidebar-member {
+            color: #64B5F6;
+            font-weight: normal;
+            font-size: 14px;
+        }
+    </style>
+    <div class="sidebar-leader">👑 Ismail Kamal (Leader)</div>
+    <div class="sidebar-member">👤 Adel ElSayed</div>
+    <div class="sidebar-member">👤 Mohamed Gaber</div>
+    <div class="sidebar-member">👤 Ahmed Omar</div>
+    <div class="sidebar-member">👤 Sherouk Ashraf</div>
+    <div class="sidebar-member">👤 Mohamed ElHammadi</div>
+    <div class="sidebar-member">👤 Farouk Sameh</div>
+    """, unsafe_allow_html=True)
+    
     st.markdown("---")
     st.markdown("### 🎓 Supervisor")
     st.markdown("<span style='color: #FF0000; font-weight: bold; font-size: 18px;'>Dr. Mohamed Tash</span>", unsafe_allow_html=True)
@@ -328,7 +385,7 @@ def generate_detailed_analysis(co2, energy, water, waste, detailed_kpis):
     ---
     
     *This analysis was generated by AI Agent in compliance with GRI Standards 2024 and ESG reporting framework.*
-    *Supervised by: Dr. Mohamed Tash (Professor of Sustainability & ESG)*
+    *Team Leader: Ismail Kamal | Under Supervision: Dr. Mohamed Tash*
     """
     
     return analysis, esg_score
@@ -349,7 +406,11 @@ def generate_pro_pdf_report(co2, energy, water, waste, detailed_analysis, esg_sc
     story.append(Paragraph("GRI Standards Compliant | ESG Framework | AI Analysis", styles['Heading2']))
     story.append(Spacer(1, 36))
     
-    story.append(Paragraph(f"<b>Report Generated by:</b> Ismail Kamal & Team", styles['Normal']))
+    # Team with colors in PDF
+    story.append(Paragraph(f"<b>Report Generated by:</b>", styles['Normal']))
+    story.append(Paragraph(f"<b><font color='#0D47A1'>Team Leader: Ismail Kamal</font></b>", styles['Normal']))
+    story.append(Paragraph(f"<font color='#42A5F5'>Team Members: Adel ElSayed, Mohamed Gaber, Ahmed Omar, Sherouk Ashraf, Mohamed ElHammadi, Farouk Sameh</font>", styles['Normal']))
+    story.append(Spacer(1, 12))
     story.append(Paragraph(f"<b><font color='red'>Supervised by: Dr. Mohamed Tash</font></b>", styles['Normal']))
     story.append(Paragraph(f"<b>Date:</b> {datetime.now().strftime('%B %d, %Y')}", styles['Normal']))
     story.append(Spacer(1, 24))
@@ -487,7 +548,9 @@ st.markdown("---")
 st.markdown("""
     <div style='text-align: center; color: gray;'>
         <p>🌱 Sustainability Report Analysis with AI Agent | GRI Standards 2024 Compliant | ESG Framework</p>
-        <p>Developed by <strong>Ismail Kamal</strong> & Team | <span style='color: #FF0000; font-weight: bold;'>Under Supervision of Dr. Mohamed Tash</span></p>
+        <p>Developed by <span style='color: #0D47A1; font-weight: bold;'>Ismail Kamal (Team Leader)</span> & 
+        <span style='color: #42A5F5;'>Team Members: Adel, Mohamed, Ahmed, Sherouk, ElHammadi, Farouk</span> | 
+        <span style='color: #FF0000; font-weight: bold;'>Under Supervision of Dr. Mohamed Tash</span></p>
         <p>Version 3.0 | AI-Powered | Regulatory Compliance Check</p>
     </div>
 """, unsafe_allow_html=True)
