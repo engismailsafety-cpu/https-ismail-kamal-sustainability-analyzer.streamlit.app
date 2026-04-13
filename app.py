@@ -2,20 +2,13 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-from plotly.subplots import make_subplots
 from PyPDF2 import PdfReader
 import re
 from reportlab.lib.pagesizes import letter, landscape
 from reportlab.lib import colors
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, PageBreak, Image
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, PageBreak
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.lib.units import inch
 from datetime import datetime
-import io
-import base64
-import numpy as np
-import tempfile
-import os
 
 # -----------------------
 # PAGE CONFIG
@@ -27,7 +20,7 @@ st.set_page_config(
 )
 
 # -----------------------
-# PROFESSIONAL CUSTOM CSS - FIXED COLORS
+# PROFESSIONAL CUSTOM CSS
 # -----------------------
 st.markdown("""
     <style>
@@ -62,7 +55,6 @@ st.markdown("""
         margin: 0;
         font-weight: 700;
     }
-    /* Sidebar - Fixed Colors for Team Members (High Contrast) */
     [data-testid="stSidebar"] {
         background: linear-gradient(180deg, #0A2E0F 0%, #0D47A1 100%);
     }
@@ -169,13 +161,13 @@ if not st.session_state.logged_in:
             ### 👥 Project Team
             <table style="width: 100%;">
                 <tr style="background-color: #E8F5E9;"><th>Role</th><th>Name</th></tr>
-                <tr><td><b>Team Leader</b></td><td style="color:#00008B; font-weight:bold; font-size:16px;">Ismail Kamal</td></tr>
-                <tr><td>Team Member</td><td style="color:#00008B; font-size:15px;">Adel ElSayed</td></tr>
-                <tr><td>Team Member</td><td style="color:#00008B; font-size:15px;">Mohamed Gaber</td></tr>
-                <tr><td>Team Member</td><td style="color:#00008B; font-size:15px;">Ahmed Omar</td></tr>
-                <tr><td>Team Member</td><td style="color:#00008B; font-size:15px;">Sherouk Ashraf</td></tr>
-                <tr><td>Team Member</td><td style="color:#00008B; font-size:15px;">Mohamed ElHammadi</td></tr>
-                <tr><td>Team Member</td><td style="color:#00008B; font-size:15px;">Farouk Sameh</td></tr>
+                <tr><td><b>Team Leader</b></td><td style="color:#00008B; font-weight:bold;">Ismail Kamal</td></tr>
+                <tr><td>Team Member</td><td style="color:#00008B;">Adel ElSayed</td></tr>
+                <tr><td>Team Member</td><td style="color:#00008B;">Mohamed Gaber</td></tr>
+                <tr><td>Team Member</td><td style="color:#00008B;">Ahmed Omar</td></tr>
+                <tr><td>Team Member</td><td style="color:#00008B;">Sherouk Ashraf</td></tr>
+                <tr><td>Team Member</td><td style="color:#00008B;">Mohamed ElHammadi</td></tr>
+                <tr><td>Team Member</td><td style="color:#00008B;">Farouk Sameh</td></tr>
             </table>
         """, unsafe_allow_html=True)
     
@@ -209,12 +201,11 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # -----------------------
-# SIDEBAR - FIXED COLORS (HIGH CONTRAST)
+# SIDEBAR
 # -----------------------
 with st.sidebar:
     st.markdown("<div style='text-align: center; font-size: 50px; margin-bottom: 20px;'>🌿</div>", unsafe_allow_html=True)
     
-    # Team Section - Fixed Colors
     st.markdown("""
         <div class='team-section'>
             <div class='team-title'>👥 PROJECT TEAM</div>
@@ -228,7 +219,6 @@ with st.sidebar:
         </div>
     """, unsafe_allow_html=True)
     
-    # Supervisor Section
     st.markdown("""
         <div class='supervisor-section'>
             <h3 style='color: #2E7D32; margin: 0; font-size: 18px;'>🎓 SUPERVISOR</h3>
@@ -240,7 +230,6 @@ with st.sidebar:
     
     st.markdown("---")
     
-    # Comparison Mode Toggle
     comparison_mode = st.checkbox("📊 Company Comparison Mode", value=st.session_state.comparison_mode)
     st.session_state.comparison_mode = comparison_mode
     
@@ -302,26 +291,14 @@ def safe_float(value):
     except:
         return 0
 
-def fig_to_base64(fig):
-    """Convert plotly figure to base64 for embedding in PDF"""
-    img_bytes = fig.to_image(format="png", width=800, height=500, scale=1)
-    return base64.b64encode(img_bytes).decode()
-
-def save_chart_temp(fig):
-    """Save plotly figure to temporary file"""
-    with tempfile.NamedTemporaryFile(suffix='.png', delete=False) as tmpfile:
-        fig.write_image(tmpfile.name, width=800, height=500, scale=1)
-        return tmpfile.name
-
-def generate_pdf_with_charts(data, metrics_summary, gri_status, chart_files):
-    """Generate PDF summary report with embedded charts"""
+def generate_pdf_summary_report(data, gri_status):
+    """Generate PDF summary report (text only)"""
     
     filename = f"Sustainability_Summary_Report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
     doc = SimpleDocTemplate(filename, pagesize=landscape(letter))
     styles = getSampleStyleSheet()
     story = []
     
-    # Custom styles
     title_style = ParagraphStyle('CustomTitle', parent=styles['Heading1'], fontSize=28,
                                   textColor=colors.HexColor('#1B5E20'), spaceAfter=30, alignment=1)
     heading_style = ParagraphStyle('CustomHeading', parent=styles['Heading2'], fontSize=18,
@@ -346,8 +323,7 @@ def generate_pdf_with_charts(data, metrics_summary, gri_status, chart_files):
     # Executive Summary
     story.append(Paragraph("📋 EXECUTIVE SUMMARY", heading_style))
     summary_text = f"""
-    This report provides a comprehensive analysis of sustainability performance based on the uploaded report.
-    Key metrics have been extracted and benchmarked against GRI Standards and industry averages.
+    This report provides a comprehensive analysis of sustainability performance.
     
     <b>Key Findings:</b><br/>
     • CO₂ Emissions: {data['co2']} metric tons<br/>
@@ -364,86 +340,34 @@ def generate_pdf_with_charts(data, metrics_summary, gri_status, chart_files):
     story.append(Paragraph("📊 KEY PERFORMANCE INDICATORS", heading_style))
     
     kpi_table_data = [
-        ['Metric', 'Value', 'Unit', 'GRI Standard', 'Status'],
-        ['CO₂ Emissions', data['co2'], 'metric tons', 'GRI 305-1', '✅' if safe_float(data['co2']) < 47000 else '⚠️'],
-        ['Energy Consumption', data['energy'], 'MWh', 'GRI 302-1', '✅' if safe_float(data['energy']) < 120000 else '⚠️'],
-        ['Water Usage', data['water'], 'm³', 'GRI 303-3', '✅' if safe_float(data['water']) < 2500000 else '⚠️'],
-        ['Waste Generated', data['waste'], 'tons', 'GRI 306-3', '✅' if safe_float(data['waste']) < 8500 else '⚠️'],
-        ['Renewable Energy', data['renewable'], '%', 'GRI 302-2', '✅' if safe_float(data['renewable']) > 30 else '⚠️'],
-        ['Safety (LTIFR)', data['safety'], 'rate', 'GRI 403-9', '✅' if safe_float(data['safety']) < 1.3 else '⚠️'],
+        ['Metric', 'Value', 'Unit', 'GRI Standard'],
+        ['CO₂ Emissions', data['co2'], 'metric tons', 'GRI 305-1'],
+        ['Energy Consumption', data['energy'], 'MWh', 'GRI 302-1'],
+        ['Water Usage', data['water'], 'm³', 'GRI 303-3'],
+        ['Waste Generated', data['waste'], 'tons', 'GRI 306-3'],
+        ['Renewable Energy', data['renewable'], '%', 'GRI 302-2'],
+        ['Safety (LTIFR)', data['safety'], 'rate', 'GRI 403-9'],
     ]
     
-    table = Table(kpi_table_data, colWidths=[100, 70, 70, 80, 60])
+    table = Table(kpi_table_data, colWidths=[130, 80, 80, 90])
     table.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#1B5E20')),
         ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
         ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
         ('GRID', (0, 0), (-1, -1), 1, colors.grey),
-        ('FONTSIZE', (0, 0), (-1, -1), 9),
+        ('FONTSIZE', (0, 0), (-1, -1), 10),
     ]))
     story.append(table)
     story.append(Spacer(1, 20))
     
-    # Charts Section - Gauge Charts
-    story.append(PageBreak())
-    story.append(Paragraph("📈 PERFORMANCE GAUGES", heading_style))
-    
-    if 'gauge_co2' in chart_files and os.path.exists(chart_files['gauge_co2']):
-        img_co2 = Image(chart_files['gauge_co2'], width=300, height=200)
-        story.append(img_co2)
-    if 'gauge_renewable' in chart_files and os.path.exists(chart_files['gauge_renewable']):
-        img_renewable = Image(chart_files['gauge_renewable'], width=300, height=200)
-        story.append(img_renewable)
-    
-    story.append(Spacer(1, 20))
-    
-    # Benchmarking Charts
-    story.append(Paragraph("📊 BENCHMARKING ANALYSIS", heading_style))
-    if 'bar_co2' in chart_files and os.path.exists(chart_files['bar_co2']):
-        img_bar = Image(chart_files['bar_co2'], width=350, height=250)
-        story.append(img_bar)
-    if 'bar_renewable' in chart_files and os.path.exists(chart_files['bar_renewable']):
-        img_bar2 = Image(chart_files['bar_renewable'], width=350, height=250)
-        story.append(img_bar2)
-    
-    story.append(Spacer(1, 20))
-    
-    # Trend Chart
-    story.append(PageBreak())
-    story.append(Paragraph("📈 TREND ANALYSIS", heading_style))
-    if 'trend' in chart_files and os.path.exists(chart_files['trend']):
-        img_trend = Image(chart_files['trend'], width=600, height=350)
-        story.append(img_trend)
-    
-    story.append(Spacer(1, 20))
-    
-    # Radar Chart
-    story.append(Paragraph("🕸️ ESG PERFORMANCE RADAR", heading_style))
-    if 'radar' in chart_files and os.path.exists(chart_files['radar']):
-        img_radar = Image(chart_files['radar'], width=600, height=350)
-        story.append(img_radar)
-    
-    story.append(Spacer(1, 20))
-    
-    # Pie Chart & ESG Scorecard
-    story.append(PageBreak())
-    story.append(Paragraph("🥧 RESOURCE ALLOCATION", heading_style))
-    if 'pie' in chart_files and os.path.exists(chart_files['pie']):
-        img_pie = Image(chart_files['pie'], width=350, height=250)
-        story.append(img_pie)
-    if 'esg_scorecard' in chart_files and os.path.exists(chart_files['esg_scorecard']):
-        img_esg = Image(chart_files['esg_scorecard'], width=350, height=250)
-        story.append(img_esg)
-    
-    story.append(Spacer(1, 20))
-    
     # GRI Compliance
+    story.append(PageBreak())
     story.append(Paragraph("📜 GRI STANDARDS COMPLIANCE", heading_style))
     gri_table_data = [['Standard', 'Status', 'Description']]
     for standard, info in gri_status.items():
         gri_table_data.append([standard, info['status'], info['description']])
     
-    gri_table = Table(gri_table_data, colWidths=[100, 80, 250])
+    gri_table = Table(gri_table_data, colWidths=[130, 80, 250])
     gri_table.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#2E7D32')),
         ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
@@ -515,7 +439,7 @@ def create_bar_comparison_chart(current, industry_avg, best_in_class, metric_nam
     fig.update_layout(title=f"{metric_name} Benchmarking", yaxis_title=unit, height=400, barmode='group')
     return fig
 
-def create_trend_chart_with_benchmark():
+def create_trend_chart():
     years = [2020, 2021, 2022, 2023, 2024]
     company_co2 = [52000, 49000, 47000, 45000, 38250]
     industry_co2 = [55000, 53000, 51000, 49000, 47000]
@@ -525,14 +449,14 @@ def create_trend_chart_with_benchmark():
     fig.update_layout(title="CO₂ Emissions Trend vs Industry Average", xaxis_title="Year", yaxis_title="CO₂ (metric tons)", height=400)
     return fig
 
-def create_radar_comparison_chart(values_dict):
-    categories = list(values_dict.keys())
-    company_values = [safe_float(values_dict[cat]['company']) for cat in categories]
-    industry_values = [safe_float(values_dict[cat]['industry']) for cat in categories]
+def create_radar_chart():
+    categories = ['Environmental', 'Social', 'Governance', 'Safety', 'Innovation']
+    company_values = [78, 72, 82, 75, 70]
+    industry_values = [72, 68, 75, 70, 65]
     fig = go.Figure()
     fig.add_trace(go.Scatterpolar(r=company_values, theta=categories, fill='toself', name='Your Company', line=dict(color="#2E7D32", width=3), fillcolor='rgba(46,125,50,0.3)'))
     fig.add_trace(go.Scatterpolar(r=industry_values, theta=categories, fill='toself', name='Industry Average', line=dict(color="#F57C00", width=3), fillcolor='rgba(245,124,0,0.2)'))
-    fig.update_layout(polar=dict(radialaxis=dict(visible=True, range=[0, 100])), title="ESG Performance vs Industry Average", height=500)
+    fig.update_layout(polar=dict(radialaxis=dict(visible=True, range=[0, 100])), title="ESG Performance vs Industry Average", height=450)
     return fig
 
 def create_energy_mix_chart():
@@ -582,53 +506,37 @@ if not st.session_state.comparison_mode:
             
             st.markdown("---")
             
-            # Create and display charts
+            # Gauge Charts
             st.markdown("## 🎯 Performance vs Industry Standards")
             col1, col2 = st.columns(2)
-            
-            fig_gauge_co2 = create_gauge_comparison_chart(data['co2'], "CO₂ Emissions", 47000, 35000)
-            fig_gauge_renewable = create_gauge_comparison_chart(data['renewable'], "Renewable Energy %", 30, 50)
-            
             with col1:
-                st.plotly_chart(fig_gauge_co2, use_container_width=True)
+                st.plotly_chart(create_gauge_comparison_chart(data['co2'], "CO₂ Emissions", 47000, 35000), use_container_width=True)
             with col2:
-                st.plotly_chart(fig_gauge_renewable, use_container_width=True)
+                st.plotly_chart(create_gauge_comparison_chart(data['renewable'], "Renewable Energy %", 30, 50), use_container_width=True)
             
+            # Bar Charts
             st.markdown("## 📊 Benchmarking Analysis")
             col1, col2 = st.columns(2)
-            
-            fig_bar_co2 = create_bar_comparison_chart(data['co2'], 47000, 30000, "CO₂ Emissions", "metric tons")
-            fig_bar_renewable = create_bar_comparison_chart(data['renewable'], 30, 60, "Renewable Energy", "percentage")
-            
             with col1:
-                st.plotly_chart(fig_bar_co2, use_container_width=True)
+                st.plotly_chart(create_bar_comparison_chart(data['co2'], 47000, 30000, "CO₂ Emissions", "metric tons"), use_container_width=True)
             with col2:
-                st.plotly_chart(fig_bar_renewable, use_container_width=True)
+                st.plotly_chart(create_bar_comparison_chart(data['renewable'], 30, 60, "Renewable Energy", "percentage"), use_container_width=True)
             
+            # Trend Chart
             st.markdown("## 📈 Trend Analysis")
-            fig_trend = create_trend_chart_with_benchmark()
-            st.plotly_chart(fig_trend, use_container_width=True)
+            st.plotly_chart(create_trend_chart(), use_container_width=True)
             
+            # Radar Chart
             st.markdown("## 🕸️ ESG Performance Radar")
-            radar_values = {
-                'Environmental': {'company': 78, 'industry': 72},
-                'Social': {'company': 72, 'industry': 68},
-                'Governance': {'company': 82, 'industry': 75},
-                'Safety': {'company': 75, 'industry': 70},
-                'Innovation': {'company': 70, 'industry': 65}
-            }
-            fig_radar = create_radar_comparison_chart(radar_values)
-            st.plotly_chart(fig_radar, use_container_width=True)
+            st.plotly_chart(create_radar_chart(), use_container_width=True)
             
-            st.markdown("## 🥧 Resource Allocation")
+            # Pie Chart & Scorecard
+            st.markdown("## 🥧 Resource Allocation & ESG Scorecard")
             col1, col2 = st.columns(2)
-            fig_pie = create_energy_mix_chart()
-            fig_esg = create_esg_scorecard()
-            
             with col1:
-                st.plotly_chart(fig_pie, use_container_width=True)
+                st.plotly_chart(create_energy_mix_chart(), use_container_width=True)
             with col2:
-                st.plotly_chart(fig_esg, use_container_width=True)
+                st.plotly_chart(create_esg_scorecard(), use_container_width=True)
             
             # GRI Compliance
             st.markdown("---")
@@ -669,40 +577,21 @@ if not st.session_state.comparison_mode:
             with col4:
                 st.metric("Data Completeness", "85%", delta="+5%")
             
-            # Save charts for PDF
-            chart_files = {}
-            
-            # Save all charts as images
-            with st.spinner("Saving charts for PDF report..."):
-                chart_files['gauge_co2'] = save_chart_temp(fig_gauge_co2)
-                chart_files['gauge_renewable'] = save_chart_temp(fig_gauge_renewable)
-                chart_files['bar_co2'] = save_chart_temp(fig_bar_co2)
-                chart_files['bar_renewable'] = save_chart_temp(fig_bar_renewable)
-                chart_files['trend'] = save_chart_temp(fig_trend)
-                chart_files['radar'] = save_chart_temp(fig_radar)
-                chart_files['pie'] = save_chart_temp(fig_pie)
-                chart_files['esg_scorecard'] = save_chart_temp(fig_esg)
-            
             # PDF Download
             st.markdown("---")
-            st.markdown("## 📥 Export Summary Report (With Charts)")
+            st.markdown("## 📥 Export Summary Report")
             
-            pdf_file = generate_pdf_with_charts(data, {}, gri_status, chart_files)
+            pdf_file = generate_pdf_summary_report(data, gri_status)
             with open(pdf_file, "rb") as f:
                 st.download_button(
-                    label="📥 Download PDF Summary Report (with Charts)",
+                    label="📥 Download PDF Summary Report",
                     data=f,
                     file_name=pdf_file,
                     mime="application/pdf",
                     use_container_width=True
                 )
             
-            # Cleanup temp files
-            for file in chart_files.values():
-                if os.path.exists(file):
-                    os.remove(file)
-            
-            st.success("✅ Analysis completed successfully! PDF report with charts generated.")
+            st.success("✅ Analysis completed successfully!")
 
 else:
     # Comparison Mode
@@ -744,6 +633,6 @@ st.markdown("""
             Developed by <strong>Ismail Kamal</strong> & Team | 
             <strong style='color: #FF0000;'>Under Supervision of Dr. Mohamed Tash</strong>
         </p>
-        <p style='color: #FFD54F; font-size: 11px;'>Version 5.0 | Full Charts Dashboard | PDF with Images</p>
+        <p style='color: #FFD54F; font-size: 11px;'>Version 5.0 | Full Charts Dashboard | PDF Report</p>
     </div>
 """, unsafe_allow_html=True)
