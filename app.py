@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-from PyPDF2 import PdfReader
+from pypdf import PdfReader
 import re
 from reportlab.lib.pagesizes import letter, landscape
 from reportlab.lib import colors
@@ -24,6 +24,7 @@ st.set_page_config(
 # -----------------------
 st.markdown("""
     <style>
+    /* Main Header */
     .main-header {
         background: linear-gradient(135deg, #0D47A1 0%, #1B5E20 100%);
         padding: 35px 25px;
@@ -42,6 +43,93 @@ st.markdown("""
         color: #E8F5E9;
         margin: 15px 0 0 0;
     }
+    
+    /* Login Page Team Table - Professional Design */
+    .team-table-container {
+        background: linear-gradient(135deg, #f5f7fa 0%, #ffffff 100%);
+        border-radius: 20px;
+        padding: 20px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        border: 1px solid rgba(46,125,50,0.2);
+    }
+    .team-table-title {
+        background: linear-gradient(135deg, #1B5E20 0%, #2E7D32 100%);
+        color: white;
+        padding: 12px;
+        border-radius: 12px;
+        text-align: center;
+        margin-bottom: 15px;
+        font-size: 20px;
+        font-weight: bold;
+    }
+    .team-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .team-table th {
+        background: #2E7D32;
+        color: white;
+        padding: 12px;
+        text-align: center;
+        font-size: 16px;
+        border-radius: 10px 10px 0 0;
+    }
+    .team-table td {
+        padding: 10px;
+        text-align: center;
+        border-bottom: 1px solid #ddd;
+    }
+    .team-leader-row {
+        background: linear-gradient(135deg, #FFF8E1 0%, #FFECB3 100%);
+        font-weight: bold;
+    }
+    .team-leader-name {
+        color: #D32F2F !important;
+        font-weight: bold !important;
+        font-size: 16px !important;
+    }
+    .team-member-name {
+        color: #1565C0 !important;
+        font-size: 15px !important;
+        font-weight: 500 !important;
+    }
+    .team-member-row:hover {
+        background: #E8F5E9;
+        transition: 0.3s;
+    }
+    
+    /* Supervisor Card */
+    .supervisor-card {
+        background: linear-gradient(135deg, #0D47A1 0%, #1B5E20 100%);
+        padding: 30px;
+        border-radius: 20px;
+        text-align: center;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        border: 1px solid rgba(255,215,0,0.3);
+    }
+    .supervisor-title {
+        color: #FFD54F;
+        font-size: 22px;
+        margin: 0 0 10px 0;
+    }
+    .supervisor-name {
+        color: #FF0000;
+        font-weight: bold;
+        font-size: 36px;
+        margin: 15px 0;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    }
+    .supervisor-qualification {
+        font-size: 18px;
+        color: white;
+        font-weight: bold;
+    }
+    .supervisor-title-text {
+        font-size: 14px;
+        color: #E8F5E9;
+    }
+    
+    /* Stat Cards */
     .stat-card {
         background: linear-gradient(135deg, #1B5E20 0%, #2E7D32 100%);
         padding: 20px;
@@ -55,6 +143,8 @@ st.markdown("""
         margin: 0;
         font-weight: 700;
     }
+    
+    /* Sidebar */
     [data-testid="stSidebar"] {
         background: linear-gradient(180deg, #0A2E0F 0%, #0D47A1 100%);
     }
@@ -72,7 +162,7 @@ st.markdown("""
         border-bottom: 2px solid #FFD54F;
         padding-bottom: 8px;
     }
-    .team-leader-name {
+    .team-leader-name-side {
         color: #FFD54F !important;
         font-size: 22px !important;
         font-weight: bold !important;
@@ -82,7 +172,7 @@ st.markdown("""
         margin: 10px 0;
         text-align: center;
     }
-    .team-member-name {
+    .team-member-name-side {
         color: #FFFFFF !important;
         font-size: 16px !important;
         font-weight: 500 !important;
@@ -99,13 +189,13 @@ st.markdown("""
         margin: 15px 0;
         text-align: center;
     }
-    .supervisor-name {
+    .supervisor-name-side {
         color: #FF0000 !important;
         font-size: 28px !important;
         font-weight: bold !important;
         margin: 10px 0;
     }
-    .supervisor-title {
+    .supervisor-title-side {
         color: #2E7D32 !important;
         font-size: 16px !important;
         font-weight: bold !important;
@@ -157,33 +247,60 @@ if not st.session_state.logged_in:
     col1, col2 = st.columns(2)
     
     with col1:
+        # Professional Team Table
         st.markdown("""
-            ### 👥 Project Team
-            <table style="width: 100%;">
-                <tr style="background-color: #E8F5E9;"><th>Role</th><th>Name</th></tr>
-                <tr><td><b>Team Leader</b></td><td style="color:#00008B; font-weight:bold;">Ismail Kamal</td></tr>
-                <tr><td>Team Member</td><td style="color:#00008B;">Adel ElSayed</td></tr>
-                <tr><td>Team Member</td><td style="color:#00008B;">Mohamed Gaber</td></tr>
-                <tr><td>Team Member</td><td style="color:#00008B;">Ahmed Omar</td></tr>
-                <tr><td>Team Member</td><td style="color:#00008B;">Sherouk Ashraf</td></tr>
-                <tr><td>Team Member</td><td style="color:#00008B;">Mohamed ElHammadi</td></tr>
-                <tr><td>Team Member</td><td style="color:#00008B;">Farouk Sameh</td></tr>
-            </table>
+            <div class='team-table-container'>
+                <div class='team-table-title'>👥 PROJECT TEAM</div>
+                <table class='team-table'>
+                    <tr>
+                        <th>Role</th>
+                        <th>Name</th>
+                    </tr>
+                    <tr class='team-leader-row'>
+                        <td><b>🏆 Team Leader</b></td>
+                        <td class='team-leader-name'>Ismail Kamal</td>
+                    </tr>
+                    <tr class='team-member-row'>
+                        <td>📋 Team Member</td>
+                        <td class='team-member-name'>Adel ElSayed</td>
+                    </tr>
+                    <tr class='team-member-row'>
+                        <td>📋 Team Member</td>
+                        <td class='team-member-name'>Mohamed Gaber</td>
+                    </tr>
+                    <tr class='team-member-row'>
+                        <td>📋 Team Member</td>
+                        <td class='team-member-name'>Ahmed Omar</td>
+                    </tr>
+                    <tr class='team-member-row'>
+                        <td>📋 Team Member</td>
+                        <td class='team-member-name'>Sherouk Ashraf</td>
+                    </tr>
+                    <tr class='team-member-row'>
+                        <td>📋 Team Member</td>
+                        <td class='team-member-name'>Mohamed ElHammadi</td>
+                    </tr>
+                    <tr class='team-member-row'>
+                        <td>📋 Team Member</td>
+                        <td class='team-member-name'>Farouk Sameh</td>
+                    </tr>
+                </table>
+            </div>
         """, unsafe_allow_html=True)
     
     with col2:
         st.markdown("""
-            <div style='background: linear-gradient(135deg, #0D47A1 0%, #1B5E20 100%); 
-                        padding: 30px; border-radius: 20px; text-align: center;'>
-                <h3 style='color: #FFD54F; font-size: 20px;'>🎓 Under Supervision of</h3>
-                <h1 style='color: #FF0000; font-weight: bold; font-size: 38px; margin: 15px 0;'>
-                    Dr. Mohamed Tash
-                </h1>
-                <p style='font-size: 20px; color: white; font-weight: bold;'>QHSE Master at Alexandria University</p>
-                <p style='font-size: 16px; color: #E8F5E9;'>Professor of Sustainability & ESG</p>
+            <div class='supervisor-card'>
+                <div class='supervisor-title'>🎓 Under Supervision of</div>
+                <div class='supervisor-name'>Dr. Mohamed Tash</div>
+                <div class='supervisor-qualification'>QHSE Master at Alexandria University</div>
+                <div class='supervisor-title-text'>Professor of Sustainability & ESG</div>
+                <div style='margin-top: 15px; color: #FFD54F; font-size: 12px;'>⭐ Lead Supervisor | ESG Expert ⭐</div>
             </div>
         """, unsafe_allow_html=True)
     
+    st.markdown("---")
+    st.caption("© 2025 Sustainability Report Analysis System | GRI Standards Compliant")
     st.stop()
 
 # -----------------------
@@ -209,21 +326,21 @@ with st.sidebar:
     st.markdown("""
         <div class='team-section'>
             <div class='team-title'>👥 PROJECT TEAM</div>
-            <div class='team-leader-name'>🏆 Ismail Kamal <span style='font-size: 14px;'>(Team Leader)</span></div>
-            <div class='team-member-name'>• Adel ElSayed</div>
-            <div class='team-member-name'>• Mohamed Gaber</div>
-            <div class='team-member-name'>• Ahmed Omar</div>
-            <div class='team-member-name'>• Sherouk Ashraf</div>
-            <div class='team-member-name'>• Mohamed ElHammadi</div>
-            <div class='team-member-name'>• Farouk Sameh</div>
+            <div class='team-leader-name-side'>🏆 Ismail Kamal <span style='font-size: 14px;'>(Team Leader)</span></div>
+            <div class='team-member-name-side'>• Adel ElSayed</div>
+            <div class='team-member-name-side'>• Mohamed Gaber</div>
+            <div class='team-member-name-side'>• Ahmed Omar</div>
+            <div class='team-member-name-side'>• Sherouk Ashraf</div>
+            <div class='team-member-name-side'>• Mohamed ElHammadi</div>
+            <div class='team-member-name-side'>• Farouk Sameh</div>
         </div>
     """, unsafe_allow_html=True)
     
     st.markdown("""
         <div class='supervisor-section'>
             <h3 style='color: #2E7D32; margin: 0; font-size: 18px;'>🎓 SUPERVISOR</h3>
-            <div class='supervisor-name'>Dr. Mohamed Tash</div>
-            <div class='supervisor-title'>QHSE Master at Alexandria University</div>
+            <div class='supervisor-name-side'>Dr. Mohamed Tash</div>
+            <div class='supervisor-title-side'>QHSE Master at Alexandria University</div>
             <div style='font-size: 12px; color: #333;'>Professor of Sustainability & ESG</div>
         </div>
     """, unsafe_allow_html=True)
@@ -252,11 +369,17 @@ with st.sidebar:
 def extract_text(file):
     if file is None:
         return ""
-    reader = PdfReader(file)
-    text = ""
-    for page in reader.pages:
-        text += page.extract_text() or ""
-    return text
+    try:
+        reader = PdfReader(file)
+        text = ""
+        for page in reader.pages:
+            page_text = page.extract_text()
+            if page_text:
+                text += page_text
+        return text
+    except Exception as e:
+        st.error(f"Error reading PDF: {str(e)}")
+        return ""
 
 def find_kpi(text, keyword):
     patterns = [
@@ -688,8 +811,12 @@ if not st.session_state.comparison_mode:
     if file:
         with st.spinner("📖 Reading PDF..."):
             text = extract_text(file)
-            data = extract_all_data(text)
-            safety_data = extract_safety_data(text)
+            if text:
+                data = extract_all_data(text)
+                safety_data = extract_safety_data(text)
+            else:
+                st.error("Could not extract text from PDF. Please check the file format.")
+                st.stop()
         
         if st.button("🔍 Analyze Report", type="primary", use_container_width=True):
             
@@ -707,13 +834,10 @@ if not st.session_state.comparison_mode:
             
             st.markdown("---")
             
-            # -----------------------
             # SAFETY SECTION - ACCIDENTS & NEAR MISSES
-            # -----------------------
             st.markdown("## 🛡️ Safety Performance Dashboard")
             st.markdown("*Accidents, Near Misses, and Safety Metrics Analysis*")
             
-            # Display Safety KPIs
             col1, col2, col3, col4 = st.columns(4)
             with col1:
                 st.metric("💀 Fatalities", safety_data['fatalities'] if safety_data['fatalities'] != "N/A" else "0", 
@@ -730,17 +854,14 @@ if not st.session_state.comparison_mode:
             
             st.markdown("---")
             
-            # Safety Charts
             col1, col2 = st.columns(2)
             with col1:
                 st.plotly_chart(create_accidents_chart(safety_data), use_container_width=True)
             with col2:
                 st.plotly_chart(create_ltifr_gauge(safety_data), use_container_width=True)
             
-            # Near Misses Trend
             st.plotly_chart(create_near_miss_trend(), use_container_width=True)
             
-            # Safety Radar & Analysis
             col1, col2 = st.columns(2)
             with col1:
                 st.plotly_chart(create_safety_radar(), use_container_width=True)
@@ -839,7 +960,7 @@ if not st.session_state.comparison_mode:
                     use_container_width=True
                 )
             
-            st.success("✅ Analysis completed successfully! Safety data including accidents and near misses has been analyzed.")
+            st.success("✅ Analysis completed successfully!")
 
 else:
     # Comparison Mode
@@ -852,18 +973,19 @@ else:
         if company_file:
             with st.spinner(f"Analyzing Company {i+1}..."):
                 text = extract_text(company_file)
-                data = extract_all_data(text)
-                safety_data = extract_safety_data(text)
-                companies_data.append({
-                    "Company": f"Company {i+1}",
-                    "CO₂": safe_float(data['co2']),
-                    "Energy": safe_float(data['energy']),
-                    "Water": safe_float(data['water']),
-                    "Waste": safe_float(data['waste']),
-                    "Renewable": safe_float(data['renewable']),
-                    "LTIFR": safe_float(safety_data['ltifr']),
-                    "Near Misses": safe_float(safety_data['near_misses'])
-                })
+                if text:
+                    data = extract_all_data(text)
+                    safety_data = extract_safety_data(text)
+                    companies_data.append({
+                        "Company": f"Company {i+1}",
+                        "CO₂": safe_float(data['co2']),
+                        "Energy": safe_float(data['energy']),
+                        "Water": safe_float(data['water']),
+                        "Waste": safe_float(data['waste']),
+                        "Renewable": safe_float(data['renewable']),
+                        "LTIFR": safe_float(safety_data['ltifr']),
+                        "Near Misses": safe_float(safety_data['near_misses'])
+                    })
     
     if companies_data and st.button("📊 Compare Companies", type="primary"):
         df_compare = pd.DataFrame(companies_data)
