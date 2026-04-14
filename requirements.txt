@@ -3,3 +3,5 @@ pandas
 plotly
 pypdf
 reportlab
+kaleido
+openpyxl
