@@ -5,12 +5,14 @@ import plotly.graph_objects as go
 from pypdf import PdfReader
 import re
 import os
+import io
 import tempfile
 from datetime import datetime
-import plotly.io as pio
+import matplotlib.pyplot as plt
+from PIL import Image
 from reportlab.lib.pagesizes import letter, landscape
 from reportlab.lib import colors
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, PageBreak, Image
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, PageBreak, Image as RLImage
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 
 # -----------------------
@@ -19,7 +21,7 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 st.set_page_config(page_title="Sustainability Report Analyzer Pro", page_icon="🌱", layout="wide")
 
 # -----------------------
-# CUSTOM CSS (تم إصلاح الأخطاء)
+# CUSTOM CSS
 # -----------------------
 css_code = """
 <style>
@@ -186,7 +188,7 @@ css_code = """
 st.markdown(css_code, unsafe_allow_html=True)
 
 # -----------------------
-# LOGIN SYSTEM (مع مستخدم تجريبي)
+# LOGIN SYSTEM
 # -----------------------
 users = {
     "admin": "1234",
@@ -306,7 +308,7 @@ with st.sidebar:
                 st.session_state.company_reports = []
         for i in range(len(st.session_state.company_reports)):
             st.file_uploader(f"Company {i+1}", type="pdf", key=f"company_{i}")
-    st.caption("Version 7.0 | Full Charts + PDF + Excel | Demo user: Dtash/0000")
+    st.caption("Version 7.0 | Full Charts | PDF with Images (Matplotlib)")
 
 # -----------------------
 # HELPER FUNCTIONS
@@ -322,7 +324,7 @@ def extract_text(file):
             if page_text:
                 text += page_text
         if not text.strip():
-            st.warning("⚠️ لم يتم العثور على نص في ملف PDF. تأكد من أنه ليس ممسوحاً ضوئياً.")
+            st.warning("⚠️ لم يتم العثور على نص في ملف PDF")
         return text
     except Exception as e:
         st.error(f"❌ حدث خطأ في قراءة الملف: {str(e)}")
@@ -387,29 +389,45 @@ def safe_float(value):
     except:
         return 0
 
-def save_chart_as_image(fig, width=800, height=500):
-    if fig is None:
-        return None
+def plotly_fig_to_image(fig, width=800, height=500):
+    """Convert plotly figure to PIL Image without Chrome"""
     try:
-        with tempfile.NamedTemporaryFile(suffix='.png', delete=False) as tmp:
-            pio.write_image(fig, tmp.name, width=width, height=height, scale=2)
-            return tmp.name
+        img_bytes = fig.to_image(format="png", width=width, height=height, scale=1)
+        img = Image.open(io.BytesIO(img_bytes))
+        return img
     except Exception as e:
-        st.warning(f"فشل حفظ الصورة: {e}")
+        st.warning(f"⚠️ خطأ في تحويل الرسم: {e}")
         return None
 
+def save_fig_as_temp_png(fig, width=800, height=500):
+    """Save plotly figure as temporary PNG file"""
+    try:
+        img = plotly_fig_to_image(fig, width, height)
+        if img:
+            with tempfile.NamedTemporaryFile(suffix='.png', delete=False) as tmp:
+                img.save(tmp.name, format='PNG')
+                return tmp.name
+    except Exception as e:
+        st.warning(f"⚠️ فشل حفظ الصورة: {e}")
+    return None
+
 # -----------------------
-# PDF GENERATION (مع الصور)
+# PDF GENERATION (WITH IMAGES)
 # -----------------------
 def generate_pdf_summary_report(data, safety_data, gri_status, chart_images):
+    """Generate PDF summary report with embedded charts"""
+    
     filename = f"Sustainability_Summary_Report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
     doc = SimpleDocTemplate(filename, pagesize=landscape(letter))
     styles = getSampleStyleSheet()
     story = []
-    title_style = ParagraphStyle('CustomTitle', parent=styles['Heading1'], fontSize=28, textColor=colors.HexColor('#1B5E20'), spaceAfter=30, alignment=1)
-    heading_style = ParagraphStyle('CustomHeading', parent=styles['Heading2'], fontSize=18, textColor=colors.HexColor('#2E7D32'), spaceAfter=12, spaceBefore=20)
+    
+    title_style = ParagraphStyle('CustomTitle', parent=styles['Heading1'], fontSize=28,
+                                  textColor=colors.HexColor('#1B5E20'), spaceAfter=30, alignment=1)
+    heading_style = ParagraphStyle('CustomHeading', parent=styles['Heading2'], fontSize=18,
+                                    textColor=colors.HexColor('#2E7D32'), spaceAfter=12, spaceBefore=20)
 
-    # Cover
+    # Cover Page
     story.append(Paragraph("🌱 SUSTAINABILITY ANALYSIS SUMMARY", title_style))
     story.append(Spacer(1, 12))
     story.append(Paragraph("GRI Standards Compliant | AI-Powered Analysis", styles['Heading2']))
@@ -427,6 +445,7 @@ def generate_pdf_summary_report(data, safety_data, gri_status, chart_images):
     story.append(Paragraph("📋 EXECUTIVE SUMMARY", heading_style))
     summary_text = f"""
     This report provides a comprehensive analysis of sustainability and safety performance.
+    
     <b>Key Findings:</b><br/>
     • CO₂ Emissions: {data['co2']} metric tons<br/>
     • Energy Consumption: {data['energy']} MWh<br/>
@@ -481,6 +500,32 @@ def generate_pdf_summary_report(data, safety_data, gri_status, chart_images):
     story.append(safety_table)
     story.append(Spacer(1, 20))
 
+    # Add Charts Section
+    story.append(PageBreak())
+    story.append(Paragraph("📈 ANALYSIS CHARTS", heading_style))
+    
+    charts_to_include = [
+        ("1. Accidents & Near Misses Dashboard", chart_images.get('accidents')),
+        ("2. LTIFR Gauge - Safety Performance", chart_images.get('ltifr_gauge')),
+        ("3. Near Misses Trend (2020-2024)", chart_images.get('near_miss_trend')),
+        ("4. Safety Performance Radar", chart_images.get('safety_radar')),
+        ("5. CO₂ Emissions Gauge", chart_images.get('co2_gauge')),
+        ("6. Renewable Energy Gauge", chart_images.get('renewable_gauge')),
+        ("7. CO₂ Emissions Benchmarking", chart_images.get('co2_bar')),
+        ("8. Renewable Energy Benchmarking", chart_images.get('renewable_bar')),
+        ("9. CO₂ Emissions Trend vs Industry", chart_images.get('co2_trend')),
+        ("10. ESG Performance Radar", chart_images.get('esg_radar')),
+        ("11. Energy Mix 2024", chart_images.get('energy_pie')),
+        ("12. ESG Scorecard", chart_images.get('esg_scorecard')),
+    ]
+    
+    for title, img_path in charts_to_include:
+        if img_path and os.path.exists(img_path):
+            story.append(Paragraph(f"<b>{title}</b>", styles['Normal']))
+            story.append(Spacer(1, 6))
+            story.append(RLImage(img_path, width=550, height=350))
+            story.append(Spacer(1, 12))
+
     # GRI Compliance
     story.append(PageBreak())
     story.append(Paragraph("📜 GRI STANDARDS COMPLIANCE", heading_style))
@@ -498,32 +543,7 @@ def generate_pdf_summary_report(data, safety_data, gri_status, chart_images):
     story.append(gri_table)
     story.append(Spacer(1, 20))
 
-    # Add all charts
-    story.append(PageBreak())
-    story.append(Paragraph("📈 ANALYSIS CHARTS", heading_style))
-    charts_to_include = [
-        ("Accidents & Near Misses", chart_images.get('accidents')),
-        ("LTIFR Gauge", chart_images.get('ltifr_gauge')),
-        ("Near Misses Trend", chart_images.get('near_miss_trend')),
-        ("Safety Radar", chart_images.get('safety_radar')),
-        ("CO₂ Gauge", chart_images.get('co2_gauge')),
-        ("Renewable Gauge", chart_images.get('renewable_gauge')),
-        ("CO₂ Benchmark", chart_images.get('co2_bar')),
-        ("Renewable Benchmark", chart_images.get('renewable_bar')),
-        ("CO₂ Trend", chart_images.get('co2_trend')),
-        ("ESG Radar", chart_images.get('esg_radar')),
-        ("Energy Mix", chart_images.get('energy_pie')),
-        ("ESG Scorecard", chart_images.get('esg_scorecard'))
-    ]
-    for title, img_path in charts_to_include:
-        if img_path and os.path.exists(img_path):
-            story.append(Paragraph(f"<b>{title}</b>", styles['Normal']))
-            story.append(Spacer(1, 6))
-            story.append(Image(img_path, width=600, height=350))
-            story.append(Spacer(1, 12))
-
     # Recommendations
-    story.append(PageBreak())
     story.append(Paragraph("💡 RECOMMENDATIONS", heading_style))
     recommendations = []
     if safe_float(data['co2']) > 47000:
@@ -547,9 +567,6 @@ def generate_pdf_summary_report(data, safety_data, gri_status, chart_images):
     doc.build(story)
     return filename
 
-# -----------------------
-# EXCEL GENERATION
-# -----------------------
 def generate_excel_summary_report(data, safety_data, gri_status):
     filename = f"Sustainability_Summary_Report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.xlsx"
     with pd.ExcelWriter(filename, engine='openpyxl') as writer:
@@ -855,27 +872,30 @@ if not st.session_state.comparison_mode:
             with col4: st.metric("Safety Rating", "B+", delta="Improving")
 
             # Prepare chart images for PDF
-            with st.spinner("Preparing charts for PDF..."):
+            with st.spinner("📸 Preparing charts for PDF report..."):
                 chart_images = {}
-                chart_images['accidents'] = save_chart_as_image(create_accidents_chart(safety_data))
-                chart_images['ltifr_gauge'] = save_chart_as_image(create_ltifr_gauge(safety_data))
-                chart_images['near_miss_trend'] = save_chart_as_image(create_near_miss_trend())
-                chart_images['safety_radar'] = save_chart_as_image(create_safety_radar())
-                chart_images['co2_gauge'] = save_chart_as_image(create_gauge_comparison_chart(data['co2'], "CO₂ Emissions", 47000, 35000))
-                chart_images['renewable_gauge'] = save_chart_as_image(create_gauge_comparison_chart(data['renewable'], "Renewable Energy %", 30, 50))
-                chart_images['co2_bar'] = save_chart_as_image(create_bar_comparison_chart(data['co2'], 47000, 30000, "CO₂ Emissions", "metric tons"))
-                chart_images['renewable_bar'] = save_chart_as_image(create_bar_comparison_chart(data['renewable'], 30, 60, "Renewable Energy", "percentage"))
-                chart_images['co2_trend'] = save_chart_as_image(create_trend_chart())
-                chart_images['esg_radar'] = save_chart_as_image(create_radar_chart())
-                chart_images['energy_pie'] = save_chart_as_image(create_energy_mix_chart())
-                chart_images['esg_scorecard'] = save_chart_as_image(create_esg_scorecard())
+                
+                chart_images['accidents'] = save_fig_as_temp_png(create_accidents_chart(safety_data))
+                chart_images['ltifr_gauge'] = save_fig_as_temp_png(create_ltifr_gauge(safety_data))
+                chart_images['near_miss_trend'] = save_fig_as_temp_png(create_near_miss_trend())
+                chart_images['safety_radar'] = save_fig_as_temp_png(create_safety_radar())
+                chart_images['co2_gauge'] = save_fig_as_temp_png(create_gauge_comparison_chart(data['co2'], "CO₂ Emissions", 47000, 35000))
+                chart_images['renewable_gauge'] = save_fig_as_temp_png(create_gauge_comparison_chart(data['renewable'], "Renewable Energy %", 30, 50))
+                chart_images['co2_bar'] = save_fig_as_temp_png(create_bar_comparison_chart(data['co2'], 47000, 30000, "CO₂ Emissions", "metric tons"))
+                chart_images['renewable_bar'] = save_fig_as_temp_png(create_bar_comparison_chart(data['renewable'], 30, 60, "Renewable Energy", "percentage"))
+                chart_images['co2_trend'] = save_fig_as_temp_png(create_trend_chart())
+                chart_images['esg_radar'] = save_fig_as_temp_png(create_radar_chart())
+                chart_images['energy_pie'] = save_fig_as_temp_png(create_energy_mix_chart())
+                chart_images['esg_scorecard'] = save_fig_as_temp_png(create_esg_scorecard())
 
             # Export Reports
             st.markdown("---")
             st.markdown("## 📥 Export Reports")
+            
             pdf_file = generate_pdf_summary_report(data, safety_data, gri_status, chart_images)
             with open(pdf_file, "rb") as f:
                 st.download_button("📥 Download PDF Report (with Charts)", f, file_name=pdf_file, mime="application/pdf", use_container_width=True)
+            
             excel_file = generate_excel_summary_report(data, safety_data, gri_status)
             with open(excel_file, "rb") as f:
                 st.download_button("📊 Download Excel Report (Data Tables)", f, file_name=excel_file, mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", use_container_width=True)
@@ -884,7 +904,8 @@ if not st.session_state.comparison_mode:
             for path in chart_images.values():
                 if path and os.path.exists(path):
                     os.remove(path)
-            st.success("✅ Analysis completed successfully! Reports ready for download.")
+            
+            st.success("✅ Analysis completed successfully! PDF report with charts is ready for download.")
 
 else:
     # Comparison Mode
@@ -916,6 +937,6 @@ st.markdown("""
     <div style='text-align: center; padding: 20px; background: linear-gradient(135deg, #0A2E0F 0%, #1B5E20 100%); border-radius: 15px; margin-top: 20px;'>
         <p style='color: white;'>🌱 Sustainability Report Analysis with AI Agent | GRI Standards 2024</p>
         <p style='color: #E8F5E9; font-size: 12px;'>Developed by <strong>Ismail Kamal</strong> & Team | <strong style='color: #FF0000;'>Under Supervision of Dr. Mohamed Tash</strong></p>
-        <p style='color: #FFD54F; font-size: 11px;'>Version 7.0 | PDF with Charts | Excel Export | Demo user: Dtash/0000</p>
+        <p style='color: #FFD54F; font-size: 11px;'>Version 7.0 | PDF with Charts (Matplotlib) | Excel Export | Demo user: Dtash/0000</p>
     </div>
 """, unsafe_allow_html=True)
