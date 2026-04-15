@@ -3,6 +3,6 @@ pandas
 plotly
 pypdf
 reportlab
-kaleido
 openpyxl
-
+matplotlib
+pillow
